@@ -1,7 +1,9 @@
+Сит Тху Чжо (18:03):
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "https://task-manager-backend.onrender.com";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -14,7 +16,7 @@ function App() {
   const [editId, setEditId] = useState(null);
 
   const fetchTasks = async () => {
-    const res = await axios.get("http://localhost:5000/tasks");
+    const res = await axios.get(`${API_URL}/tasks`);
     setTasks(res.data);
   };
 
@@ -22,58 +24,59 @@ function App() {
     fetchTasks();
   }, []);
 
-const addTask = async () => {
-  if (!task.trim()) return;
+  const addTask = async () => {
+    if (!task.trim()) return;
 
-  const newTask = {
-    text: task,
-    priority,
-    deadline,
-    status,
-    completed: status === "Done",
+    const newTask = {
+      text: task,
+      priority,
+      deadline,
+      status,
+      completed: status === "Done",
+    };
+
+    try {
+      if (editId) {
+        await axios.put(`${API_URL}/tasks/${editId}`, newTask);
+        setEditId(null);
+      } else {
+        await axios.post(`${API_URL}/tasks`, newTask);
+      }
+
+      fetchTasks();
+
+      setTask("");
+      setPriority("Medium");
+      setDeadline("");
+      setStatus("To Do");
+
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+      alert(error.response?.data?.error || "Task add failed");
+    }
   };
 
-  try {
-    if (editId) {
-      await axios.put(`http://localhost:5000/tasks/${editId}`, newTask);
-      setEditId(null);
-    } else {
-      await axios.post("http://localhost:5000/tasks", newTask);
-    }
-
-    fetchTasks();
-
-    setTask("");
-    setPriority("Medium");
-    setDeadline("");
-    setStatus("To Do");
-
-  } catch (error) {
-  console.log(error.response?.data || error.message);
-  alert(error.response?.data?.error || "Task add failed");
-}
-};
-
   const deleteTask = async (id) => {
-  await axios.delete(`http://localhost:5000/tasks/${id}`);
-  fetchTasks();
-};
+    await axios.delete(`${API_URL}/tasks/${id}`);
+    fetchTasks();
+  };
+
   const editTask = (t) => {
-  setTask(t.text);
-  setPriority(t.priority);
-  setDeadline(t.deadline || "");
-  setStatus(t.status);
-  setEditId(t.id);
-};
+    setTask(t.text);
+    setPriority(t.priority);
+    setDeadline(t.deadline || "");
+    setStatus(t.status);
+    setEditId(t.id);
+  };
 
-const toggleComplete = async (t) => {
-  await axios.put(`http://localhost:5000/tasks/${t.id}`, {
-    completed: !t.completed,
-    status: !t.completed ? "Done" : "To Do",
-  });
+  const toggleComplete = async (t) => {
+    await axios.put(`${API_URL}/tasks/${t.id}`, {
+      completed: !t.completed,
+      status: !t.completed ? "Done" : "To Do",
+    });
+    fetchTasks();
+  };
 
-  fetchTasks();
-};
   const filteredTasks = tasks.filter((t) => {
     const matchSearch = t.text.toLowerCase().includes(search.toLowerCase());
 
@@ -139,12 +142,15 @@ const toggleComplete = async (t) => {
         <div className="filters">
           {["All", "To Do", "In Progress", "Done", "Completed", "Pending"].map(
             (f) => (
-              <button key={f} onClick={() => setFilter(f)}>
+
+Сит Тху Чжо (18:03):
+<button key={f} onClick={() => setFilter(f)}>
                 {f}
               </button>
             )
           )}
         </div>
+
         <div className="task-list">
           {filteredTasks.map((t) => (
             <div className="task-card" key={t.id}>
