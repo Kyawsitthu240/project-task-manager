@@ -1,4 +1,3 @@
-Сит Тху Чжо (18:03):
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
@@ -143,7 +142,7 @@ function App() {
           {["All", "To Do", "In Progress", "Done", "Completed", "Pending"].map(
             (f) => (
 
-Сит Тху Чжо (18:03):
+
 <button key={f} onClick={() => setFilter(f)}>
                 {f}
               </button>
